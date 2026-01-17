@@ -2,7 +2,38 @@
 
 Reproducible NixOS configuration for remote development. Fork this repo and have a fully-configured dev environment running in minutes.
 
+## Why Remote Dev?
+
+**Run AI coding agents 24/7, accessible from anywhere.**
+
+This setup uses **tmux** to maintain persistent terminal sessions on a cloud server. Your AI agents keep running even when you disconnect:
+
+- **Multiple agents in parallel** — Run Claude Code, Aider, OpenCode, or any CLI-based AI tool in separate tmux sessions, all working on different tasks simultaneously
+- **Access from anywhere** — SSH in from your laptop, phone ([Termius](https://termius.com/)), tablet, or any device. Your sessions are always there, exactly where you left them
+- **Never lose work** — Connection dropped? Laptop died? No problem. Reconnect and your agents are still running, mid-task
+- **Persistent context** — Long-running agents maintain their conversation history and working state across days or weeks
+- **Low latency for agents** — Your AI tools run on a server with fast, stable internet — no more local network issues slowing down API calls
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Your Cloud Server (always running)                     │
+│                                                         │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐       │
+│  │   claude1   │ │   claude2   │ │   claude3   │       │
+│  │  (refactor) │ │   (tests)   │ │   (docs)    │       │
+│  └─────────────┘ └─────────────┘ └─────────────┘       │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+         ▲                ▲                ▲
+         │                │                │
+    ┌────┴────┐     ┌────┴────┐     ┌────┴────┐
+    │ Laptop  │     │ Phone   │     │ Tablet  │
+    └─────────┘     └─────────┘     └─────────┘
+```
+
 > **Note**: For the best experience, use a terminal with a [Nerd Font](https://www.nerdfonts.com/) installed (e.g., JetBrainsMono Nerd Font, FiraCode Nerd Font). This enables the icons in the starship prompt.
+
+---
 
 ## What's Included
 
