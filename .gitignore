@@ -1,0 +1,16 @@
+# Secrets (contains SSH keys)
+secrets.nix
+
+# Machine-specific hardware configuration
+hardware-configuration.nix
+
+# Nix build outputs
+result
+result-*
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
