@@ -2,8 +2,6 @@
 
 Reproducible NixOS configuration for remote development. Fork this repo and have a fully-configured dev environment running in minutes.
 
-![Terminal Preview](https://via.placeholder.com/800x400?text=Your+Beautiful+Terminal+Here)
-
 > **Note**: For the best experience, use a terminal with a [Nerd Font](https://www.nerdfonts.com/) installed (e.g., JetBrainsMono Nerd Font, FiraCode Nerd Font). This enables the icons in the starship prompt.
 
 ## What's Included
@@ -28,14 +26,16 @@ Before you begin, make sure you have:
 - [ ] **GitHub account** — to fork this repo
 - [ ] **SSH key pair** — check with `ls ~/.ssh/id_*.pub`
   - If none exists: `ssh-keygen -t ed25519`
-- [ ] **Cloud provider account** — Hetzner, DigitalOcean, Vultr, or similar
+- [ ] **Hetzner Cloud account** — [hetzner.com/cloud](https://www.hetzner.com/cloud)
 - [ ] **Nerd Font** (optional) — for prompt icons: [nerdfonts.com](https://www.nerdfonts.com/)
+
+> This setup has been tested on Hetzner Cloud. It should work on other providers (DigitalOcean, Vultr, etc.) but your mileage may vary.
 
 ---
 
 ## Quick Start
 
-### Phase 1: Local Setup
+### Phase 1: Local Setup (on your laptop)
 
 #### 1. Fork & Clone
 
@@ -76,26 +76,31 @@ git push
 
 ### Phase 2: Server Setup
 
-#### 4. Create Cloud Server
+#### 4. Create Hetzner Server
 
-Create a server with your cloud provider:
+In Hetzner Cloud console:
 
 | Setting | Value |
 |---------|-------|
 | **Image** | Ubuntu 24.04 |
-| **Size** | 4+ vCPU, 8GB+ RAM recommended |
-| **Region** | Closest to you |
-| **SSH Key** | Paste your public key (`cat ~/.ssh/id_ed25519.pub`) |
+| **Type** | CX22 or larger (2+ vCPU, 4GB+ RAM) |
+| **Location** | Closest to you |
+| **SSH Key** | Add your public key |
 
-**Tested providers**: Hetzner Cloud, DigitalOcean, Vultr, Linode
+To get your public key (run on your laptop):
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
 
 #### 5. Convert to NixOS
 
-SSH into your server and run nixos-infect:
+SSH into your new server:
 
 ```bash
 ssh root@YOUR_SERVER_IP
 ```
+
+Run nixos-infect to convert Ubuntu to NixOS:
 
 ```bash
 curl -L https://raw.githubusercontent.com/elitak/nixos-infect/master/nixos-infect | NIX_CHANNEL=nixos-24.11 bash -x
@@ -105,46 +110,48 @@ curl -L https://raw.githubusercontent.com/elitak/nixos-infect/master/nixos-infec
 >
 > **Wait time**: ~5-10 minutes. You'll be disconnected. Wait, then reconnect.
 
-#### 6. Reconnect & Deploy
+#### 6. Reconnect & Clone Your Config
 
 ```bash
 ssh root@YOUR_SERVER_IP
 ```
 
 ```bash
-# Remove default NixOS config
 cd /etc
 rm -rf nixos
-
-# Clone your forked repo
 git clone https://github.com/YOUR_USERNAME/remote-workspace-setup.git nixos
 cd nixos
 ```
 
 #### 7. Configure SSH Keys
 
+Your SSH key is already on the server (that's how you logged in). Copy it to secrets.nix:
+
 ```bash
-# Copy the template
+# Create secrets.nix from template
 cp secrets.nix.example secrets.nix
 
-# Add your SSH public key (paste the output of the next command)
-echo "Your public key:"
+# Open secrets.nix in editor
+nano secrets.nix
+```
+
+Now paste your SSH key. To see what key to paste, run:
+
+```bash
 cat ~/.ssh/authorized_keys
 ```
 
-Edit `secrets.nix` and paste your key:
-
-```bash
-nano secrets.nix   # or: vim secrets.nix
-```
+Copy that entire line and paste it into `secrets.nix`:
 
 ```nix
 {
   sshKeys = [
-    "ssh-ed25519 AAAA... your-key-here"
+    "ssh-ed25519 AAAA...your-full-key-here..."
   ];
 }
 ```
+
+Save and exit (in nano: `Ctrl+O`, `Enter`, `Ctrl+X`).
 
 #### 8. Generate Hardware Config
 
@@ -154,14 +161,8 @@ nixos-generate-config --show-hardware-config > hardware-configuration.nix
 
 #### 9. Build & Switch
 
-For **x86** servers (most common):
 ```bash
 nixos-rebuild switch --flake .#dev-workspace
-```
-
-For **ARM** servers (Oracle Cloud, AWS Graviton):
-```bash
-nixos-rebuild switch --flake .#dev-workspace-arm
 ```
 
 > **Build time**: ~5-15 minutes on first run.
@@ -169,10 +170,7 @@ nixos-rebuild switch --flake .#dev-workspace-arm
 #### 10. Login as Your User
 
 ```bash
-# Exit root session
 exit
-
-# SSH as your new user
 ssh YOUR_USERNAME@YOUR_SERVER_IP
 ```
 
@@ -180,7 +178,7 @@ You'll see a welcome message with final setup steps.
 
 ---
 
-### Phase 3: Final Setup
+### Phase 3: Final Setup (on the server, as your user)
 
 On first login, you'll see setup instructions. Run these:
 
@@ -191,10 +189,10 @@ gh auth login
 # 2. Install Claude Code
 npm install -g @anthropic-ai/claude-code
 
-# 3. (Optional) Enable Tailscale SSH
+# 3. (Optional) Enable Tailscale for easier SSH
 sudo tailscale up --ssh
 
-# 4. Mark setup complete
+# 4. Mark setup complete (hides the welcome message)
 touch ~/.setup-complete
 ```
 
@@ -302,19 +300,16 @@ Edit `home/user.nix` for aliases, prompt settings, etc.
 ### Can't SSH after nixos-infect
 
 - **Wait longer** — reboot can take 5-10 minutes
-- **Check cloud console** — use provider's web console to see boot progress
-- **Verify IP** — some providers change IP after reboot
+- **Check Hetzner console** — use the web console to see boot progress
+- **Verify IP** — IP should stay the same, but double-check in Hetzner dashboard
 
 ### Can't SSH after nixos-rebuild
 
-You may have misconfigured `secrets.nix`. Use your cloud provider's **web console** to:
+You may have misconfigured `secrets.nix`. Use Hetzner's **web console** to access the server and fix it:
 
 ```bash
-# Check the secrets file
-cat /etc/nixos/secrets.nix
-
-# Make sure your key is there and correctly formatted
-# Then rebuild
+cat /etc/nixos/secrets.nix    # Check the file
+nano /etc/nixos/secrets.nix   # Fix if needed
 nixos-rebuild switch --flake /etc/nixos#dev-workspace
 ```
 
@@ -332,7 +327,7 @@ Install a [Nerd Font](https://www.nerdfonts.com/) on your **local machine** and 
 
 ### Docker permission denied
 
-Log out and back in after first rebuild (group membership needs refresh):
+Log out and back in (group membership needs refresh):
 
 ```bash
 exit
