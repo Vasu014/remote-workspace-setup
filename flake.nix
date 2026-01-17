@@ -11,11 +11,12 @@
 
   outputs = { self, nixpkgs, home-manager, ... }:
     let
-      system = "x86_64-linux";
       wsConfig = import ./config.nix;
-    in
-    {
-      nixosConfigurations.dev-workspace = nixpkgs.lib.nixosSystem {
+
+      # Support both x86_64 and ARM
+      supportedSystems = [ "x86_64-linux" "aarch64-linux" ];
+
+      mkSystem = system: nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit wsConfig; };
         modules = [
@@ -33,5 +34,13 @@
           }
         ];
       };
+    in
+    {
+      # Default configuration (auto-detects architecture)
+      nixosConfigurations.dev-workspace = mkSystem "x86_64-linux";
+
+      # Explicit architecture configurations
+      nixosConfigurations.dev-workspace-x86 = mkSystem "x86_64-linux";
+      nixosConfigurations.dev-workspace-arm = mkSystem "aarch64-linux";
     };
 }

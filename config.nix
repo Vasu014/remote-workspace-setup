@@ -1,20 +1,25 @@
 # ============================================
-# CUSTOMIZE THIS FILE FOR YOUR SETUP
+#  CUSTOMIZE THIS FILE FOR YOUR SETUP
 # ============================================
+#
+#  Edit these values, then:
+#    git add -A && git commit -m "my config" && git push
+#
 
 {
-  # Your username for the dev user account
+  # Linux username (lowercase, no spaces)
   username = "dev";
 
-  # Git configuration
+  # Git commit identity
   git = {
     name = "Your Name";
     email = "your.email@example.com";
   };
 
-  # Timezone (find yours: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+  # Server timezone
+  # Find yours: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   timezone = "UTC";
 
-  # Hostname for the machine
+  # Machine hostname (shows in prompt and Tailscale)
   hostname = "dev-workspace";
 }

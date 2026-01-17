@@ -32,13 +32,17 @@
       find = "fd";
       grep = "rg";
 
+      # Editors
+      vi = "nvim";
+      vim = "nvim";
+
       # Tmux
       ta = "tmux attach -t";
       tn = "tmux new -s";
       tl = "tmux list-sessions";
       tk = "tmux kill-session -t";
 
-      # Claude Code sessions
+      # Claude Code sessions (install first: npm install -g @anthropic-ai/claude-code)
       claude1 = "tmux new -s claude1 'claude'";
       claude2 = "tmux new -s claude2 'claude'";
       claude3 = "tmux new -s claude3 'claude'";
@@ -68,10 +72,29 @@
       setopt HIST_IGNORE_SPACE
 
       # Path
-      export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+      export PATH="$HOME/.local/bin:$PATH"
 
       # Editor
-      export EDITOR="vim"
+      export EDITOR="nvim"
+
+      # First-login setup hints (only shows once)
+      if [[ ! -f ~/.setup-complete ]]; then
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "  Welcome to your dev workspace!"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "  Run these commands to complete setup:"
+        echo ""
+        echo "  1. GitHub CLI:     gh auth login"
+        echo "  2. Claude Code:    npm install -g @anthropic-ai/claude-code"
+        echo "  3. Tailscale:      sudo tailscale up --ssh"
+        echo ""
+        echo "  Then run: touch ~/.setup-complete"
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+      fi
     '';
   };
 
@@ -96,8 +119,8 @@
       git_branch.symbol = " ";
       nodejs.symbol = " ";
       python.symbol = " ";
-      rust.symbol = " ";
       nix_shell.symbol = " ";
+      docker_context.symbol = " ";
     };
   };
 
@@ -183,7 +206,7 @@
       init.defaultBranch = "main";
       push.autoSetupRemote = true;
       pull.rebase = true;
-      core.editor = "vim";
+      core.editor = "nvim";
     };
     aliases = {
       co = "checkout";

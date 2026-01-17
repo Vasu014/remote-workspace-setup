@@ -7,7 +7,7 @@ in
 {
   users.users.${wsConfig.username} = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ];
+    extraGroups = [ "wheel" "docker" ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = secrets.sshKeys;
   };
